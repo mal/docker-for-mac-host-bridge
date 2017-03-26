@@ -1,4 +1,4 @@
-# docker4mac intf
+# Docker for Mac - Host Bridge
 
 As of the time of writing Docker for Mac can't access containers via IP from
 the host. Let's fix that.
@@ -31,7 +31,8 @@ to the host. Keep scrolling for a script to automate the process!
 
 **WARNING:** Unfortunately step 7 must currently be performed after every
 restart of Docker. This is because the `tap` interface only persists while
-Docker is running. Hopefully this can be improved upon.
+Docker is running. Hopefully this can be improved upon. The install script can
+be run again safely to do this.
 
 [tto]: http://tuntaposx.sourceforge.net/
 [shim]: /install.sh#L38-L57
@@ -41,7 +42,12 @@ Docker is running. Hopefully this can be improved upon.
 A script to perform most of the steps above can be found [here][script].
 Unfortunately the warning regarding step seven still applies.
 
+There are several customisable [options][opts] which are managed by environment
+variables. The most noteable of which is `DOCKER_TAP_NETWORK` which names the
+network to be created. It defaults to `tap`.
+
 [script]: /install.sh
+[opts]: /install.sh#L83-L88
 
 ## Uninstall
 
@@ -52,7 +58,7 @@ There's no dedicated uninstaller, but the process is pretty simple:
 3. Change the owner of the chosen `tap` device to `root`, or
 4. Removal instructions for tuntaposx can be found in [their FAQ][ttofaq].
 
-[ttofaw]: http://tuntaposx.sourceforge.net/faq.xhtml
+[ttofaq]: http://tuntaposx.sourceforge.net/faq.xhtml
 
 ## Known Limitations
 
@@ -60,7 +66,7 @@ There's no dedicated uninstaller, but the process is pretty simple:
 
 ## Thanks
 
-- **Michael Henkel**
+- **Michael Henkel** --
   Without these [forum][mhenkel1] [posts][mhenkel2] this wouldn't exist.
 - **tuntaposx.sourceforge.net**
 
