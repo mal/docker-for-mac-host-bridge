@@ -73,6 +73,10 @@ There's no dedicated uninstaller, but the process is fairly simple:
 - **Michael Henkel** --
   Without these [forum][mhenkel1] [posts][mhenkel2] this wouldn't exist.
 - **tuntaposx.sourceforge.net**
+- **[@tinychaos42][tinychaos42]** and **[@idio][idio]** --
+  Without whose Mac this investigation wouldn't have been possible.
 
 [mhenkel1]: https://forums.docker.com/t/support-tap-interface-for-direct-container-access-incl-multi-host/17835/2
 [mhenkel2]: https://forums.docker.com/t/support-tap-interface-for-direct-container-access-incl-multi-host/17835/3
+[tinychaos42]: https://github.com/tinychaos42
+[idio]: https://github.com/idio
