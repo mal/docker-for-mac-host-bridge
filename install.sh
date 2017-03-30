@@ -49,9 +49,9 @@ install_hyperkit_shim() {
 		start=\$((\$start + 1))
 		stop=\$((\$start + 1))
 
-		set -- \
-		  "\${@:1:\$start}" \
-		  "-s" "2:$mobyintf,virtio-tap,$tapintf" \
+		set -- \\
+		  "\${@:1:\$start}" \\
+		  "-s" "2:$mobyintf,virtio-tap,$tapintf" \\
 		  "\${@:\$stop}"
 
 		exec \$0.real "\$@"
