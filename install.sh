@@ -1,5 +1,22 @@
 #!/bin/bash -e
 
+main() {
+  appdir=/Applications/Docker.app
+
+  # id of extra eth intf inside moby (ethN); default: 1
+  mobyintf=${DOCKER_MOBY_TAP_INTERFACE_ID-1}
+  # name of the host-accessible docker network to create; default: tap
+  network=${DOCKER_TAP_NETWORK-tap}
+  # tap device to use (/dev/X); default: tap1
+  tapintf=${DOCKER_TAP_INTERFACE-tap1}
+
+  install_tuntap_driver $1
+  chown_tap_device
+  install_hyperkit_shim
+  create_docker_network
+  assign_ip_to_tap_intf
+}
+
 err() { echo "$(tput setaf 9)$@$(tput sgr0)"; exit 1; }
 exc() { echo "$(tput setaf 11)$@$(tput sgr0)"; }
 log() { echo "$(tput setaf 10)$@$(tput sgr0)"; }
@@ -27,7 +44,7 @@ chown_tap_device() {
 }
 
 install_hyperkit_shim() {
-  cd /Applications/Docker.app/Contents/MacOS/
+  cd $appdir/Contents/MacOS/
   file com.docker.hyperkit | grep -q text && return # already done
 
   log Move original com.docker.hyperkit
@@ -80,15 +97,4 @@ assign_ip_to_tap_intf() {
   ) up
 }
 
-# id of extra eth intf inside moby (ethN); default: 1
-mobyintf=${DOCKER_MOBY_TAP_INTERFACE_ID-1}
-# name of the host-accessible docker network to create; default: tap
-network=${DOCKER_TAP_NETWORK-tap}
-# tap device to use (/dev/X); default: tap1
-tapintf=${DOCKER_TAP_INTERFACE-tap1}
-
-install_tuntap_driver $1
-chown_tap_device
-install_hyperkit_shim
-create_docker_network
-assign_ip_to_tap_intf
+main "$@"
