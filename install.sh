@@ -2,6 +2,7 @@
 
 main() {
   appdir=/Applications/Docker.app
+  libdir=$HOME/Library/Containers/com.docker.docker
 
   # additional ethernet intf inside moby (ethN); default: 1
   ethintf=${DOCKER_TAP_MOBY_ETH-1}
@@ -9,11 +10,14 @@ main() {
   network=${DOCKER_TAP_DOCKER_NETWORK-tap}
   # tap intf to use on host (/dev/X); default: tap1
   tapintf=${DOCKER_TAP_HOST_TAP-tap1}
+  # name of the docker network's bridge intf inside moby; default: br-$tapintf
+  netintf=${DOCKER_TAP_MOBY_BRIDGE-br-$tapintf}
 
   install_tuntap_driver $1
   chown_tap_device
   install_hyperkit_shim
   create_docker_network
+  bridge_docker_network
   assign_ip_to_tap_intf
 }
 
@@ -80,14 +84,29 @@ install_hyperkit_shim() {
 }
 
 create_docker_network() {
-  if docker network inspect -f . $network > /dev/null 2>&1; then
-    exc "Network $network exists!"
-    exc "It should use the macvlan driver and eth$ethintf as it's parent."
-    return
-  fi
+  local driver=$(docker network inspect -f '{{.Driver}}' $network 2> /dev/null)
+  case "$driver" in
+    "") break ;;
+    bridge) return ;; # already done
+    *) err "Network $network does not use the bridge driver!" ;;
+  esac
 
   log Create host-accessible network
-  docker network create -d macvlan -o parent=eth$ethintf $network
+  docker network create -o com.docker.network.bridge.name=$netintf $network
+}
+
+bridge_docker_network() {
+  log Bridge tap into docker network
+  echo brctl addif $(
+    docker network inspect -f '
+      {{if index .Options "com.docker.network.bridge.name"}}
+        {{index .Options "com.docker.network.bridge.name"}}
+      {{else}}
+        {{.Id | printf "br-%.12s"}}
+      {{end}}
+    ' $network
+  ) eth$ethintf \
+  > $libdir/Data/com.docker.driver.amd64-linux/tty
 }
 
 assign_ip_to_tap_intf() {
