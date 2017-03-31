@@ -7,51 +7,76 @@ It's worth remembering that this appears to be a commonly requested feature, so
 it might be [worth checking][docker-for-mac-networking] to see if it's been
 fixed in recent versions.
 
-This solution was most recently tested with: `17.03.0-ce, build 60ccb22`
+This solution was most recently tested with: `17.03.1-ce, build c6d412e`
 
 [docker-for-mac-networking]: https://docs.docker.com/docker-for-mac/networking/
 
 ## Approach
 
-Add an additional network interface (provided by `tuntaposx`) to `moby` (the VM
-containing the Linux kernel and Docker daemon) that's also accessible to the
-`host`. Use the `macvlan` docker network type to attach containers to the new
-interface thus providing direct conectivity to the `host`.
-
-## Guide
-
-This is a quick overview of the steps involved in making containers accessible
-to the host. Keep scrolling for a script to automate the process!
-
-1. Install [`tuntap` OSX][tto] driver
-2. Make the local user own `/dev/tap1` - prevents needing to run Docker as root
-3. Move `com.docker.hyperkit` to `com.docker.hyperkit.real` in the Docker app
-4. Install `com.docker.hyperkit` [shim][shim] to manipulate arguments
-5. Restart Docker
-6. Create a `macvlan` network with `eth1` as the parent
-7. Register the host of the `tap` interface
-
-**WARNING:**
-
-Unfortunately step 7 must currently be performed after every restart of Docker.
-This is because the `tap` interface only persists while Docker is running. The
-install script can be run again to do this safely. Hopefully this aspect can be
-improved upon.
-
-[tto]: http://tuntaposx.sourceforge.net/
-[shim]: /install.sh#L38-L57
+Add an additional network interface (provided by `tuntap` OSX) to `moby` (the
+VM containing the Linux kernel and Docker daemon) that's also accessible to the
+`host`. Create a docker bridge network and then, inside `moby`, add the `tap`
+backed interface to the network's bridge thus providing direct conectivity to
+the `host`.
 
 ## Install
 
-A script to perform most of the steps above can be found [here][script].
-Unfortunately the warning regarding step seven still applies.
+1. Download the [`tuntap` OSX][tto] kernel extensions
+2. Extract the `.pkg` file within the `tuntap` archive
+3. Download [`install.sh`][install]
+4. (Optional, but encouraged) Read `install.sh`!
+5. Run `install.sh` (see example below)
 
-There are several customisable [options][opts] which are managed by environment
-variables. The most noteable of which is `DOCKER_TAP_NETWORK` which names the
-network to be created. It defaults to `tap`.
+_n.b. There are several environment variable [settings][envvars]._
 
-[script]: /install.sh
-[opts]: /install.sh#L83-L88
+```sh
+# DOCKER_TAP_NETWORK=acme ./install.sh tuntap_20150118.pkg
+Install tuntap kernel extension
+Password: ***************
+installer: Package name is TunTap Installer package
+installer: Upgrading at base path /
+installer: The upgrade was successful.
+Ensure tap extension is loaded
+Permit non-root usage of tap1 device
+Move original com.docker.hyperkit
+Install com.docker.hyperkit shim
+>>>>>>> RESTART DOCKER NOW <<<<<<<
+When docker is responding (i.e. docker image ls), press return:
+Create host-accessible network
+efe009821235c9568f7ee66d882c22ce94edefa446abefb0159c392ac6024dbb
+Bridge tap into docker network
+Assign the network gateway IP to the tap interface
+
+# docker container run -d --net acme --rm nginx:alpine
+796c40fb6c78f769d502d21f2a339d08d2c75f545c579a41b6f4f7966e23ae1d
+
+# docker container inspect -f '{{.NetworkSettings.Networks.acme.IPAddress}}' 796c40fb6c78
+172.18.0.2
+
+# curl -I 172.18.0.2
+HTTP/1.1 200 OK
+Server: nginx/1.11.12
+Date: Fri, 31 Mar 2017 04:23:09 GMT
+Content-Type: text/html
+Content-Length: 612
+Last-Modified: Mon, 27 Mar 2017 19:48:13 GMT
+Connection: keep-alive
+ETag: "58d96c7d-264"
+Accept-Ranges: bytes
+
+# docker container stop 796c40fb6c78
+796c40fb6c78
+```
+
+**WARNING:**
+
+Unfortunately `install.sh` must currently be run after every restart of Docker.
+This is because both `moby` and the `tap` interface only persist while Docker
+is running. Hopefully this can be improved upon in the future.
+
+[envvars]: /install.sh#L7-L14
+[install]: /install.sh
+[tto]: http://tuntaposx.sourceforge.net/
 
 ## Uninstall
 
@@ -59,14 +84,10 @@ There's no dedicated uninstaller, but the process is fairly simple:
 
 1. Move `com.docker.hyperkit.real` back to `com.docker.hyperkit`
 2. Reboot Docker
-3. Change the owner of the chosen `tap` device to `root`, or alternatively
-4. Removal instructions for tuntaposx can be found in [their FAQ][ttofaq].
+3. Restore the owner of the chosen `tap` device to `root`, or alternatively
+4. Removal instructions for `tuntap` OSX can be found in [their FAQ][ttofaq].
 
 [ttofaq]: http://tuntaposx.sourceforge.net/faq.xhtml
-
-## Known Limitations
-
-- Ignored port mappings - due to usage of a `macvlan` network
 
 ## Thanks
 
@@ -75,8 +96,11 @@ There's no dedicated uninstaller, but the process is fairly simple:
 - **tuntaposx.sourceforge.net**
 - **[@tinychaos42][tinychaos42]** and **[@idio][idio]** --
   Without whose Mac this investigation wouldn't have been possible.
+- **[@muz][muz]** --
+  Without whose beta testing containers wouldn't even have internet. >\_>;;
 
 [mhenkel1]: https://forums.docker.com/t/support-tap-interface-for-direct-container-access-incl-multi-host/17835/2
 [mhenkel2]: https://forums.docker.com/t/support-tap-interface-for-direct-container-access-incl-multi-host/17835/3
 [tinychaos42]: https://github.com/tinychaos42
 [idio]: https://github.com/idio
+[muz]: https://github.com/muz
