@@ -86,7 +86,7 @@ install_hyperkit_shim() {
 create_docker_network() {
   local driver=$(docker network inspect -f '{{.Driver}}' $network 2> /dev/null)
   case "$driver" in
-    "") break ;;
+    '') ;;
     bridge) return ;; # already done
     *) err "Network $network does not use the bridge driver!" ;;
   esac
