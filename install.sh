@@ -3,12 +3,12 @@
 main() {
   appdir=/Applications/Docker.app
 
-  # id of extra eth intf inside moby (ethN); default: 1
-  mobyintf=${DOCKER_MOBY_TAP_INTERFACE_ID-1}
-  # name of the host-accessible docker network to create; default: tap
-  network=${DOCKER_TAP_NETWORK-tap}
-  # tap device to use (/dev/X); default: tap1
-  tapintf=${DOCKER_TAP_INTERFACE-tap1}
+  # additional ethernet intf inside moby (ethN); default: 1
+  ethintf=${DOCKER_TAP_MOBY_ETH-1}
+  # name of the docker network to create; default: tap
+  network=${DOCKER_TAP_DOCKER_NETWORK-tap}
+  # tap intf to use on host (/dev/X); default: tap1
+  tapintf=${DOCKER_TAP_HOST_TAP-tap1}
 
   install_tuntap_driver $1
   chown_tap_device
@@ -68,7 +68,7 @@ install_hyperkit_shim() {
 
 		set -- \\
 		  "\${@:1:\$start}" \\
-		  "-s" "2:$mobyintf,virtio-tap,$tapintf" \\
+		  "-s" "2:$ethintf,virtio-tap,$tapintf" \\
 		  "\${@:\$stop}"
 
 		exec \$0.real "\$@"
@@ -82,12 +82,12 @@ install_hyperkit_shim() {
 create_docker_network() {
   if docker network inspect -f . $network > /dev/null 2>&1; then
     exc "Network $network exists!"
-    exc "It should use the macvlan driver and eth$mobyintf as it's parent."
+    exc "It should use the macvlan driver and eth$ethintf as it's parent."
     return
   fi
 
   log Create host-accessible network
-  docker network create -d macvlan -o parent=eth$mobyintf $network
+  docker network create -d macvlan -o parent=eth$ethintf $network
 }
 
 assign_ip_to_tap_intf() {
