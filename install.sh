@@ -48,14 +48,23 @@ chown_tap_device() {
 }
 
 install_hyperkit_shim() {
-  cd $appdir/Contents/MacOS/
-  file com.docker.hyperkit | grep -q text && return # already done
+  set -- \
+    $appdir/Contents/MacOS/com.docker.hyperkit \
+    $appdir/Contents/Resources/bin/hyperkit
 
-  log Move original com.docker.hyperkit
-  mv com.docker.hyperkit com.docker.hyperkit.real
+  for hyperkit in "$@"
+    do test -f $hyperkit && break
+  done
 
-  log Install com.docker.hyperkit shim
-  cat > com.docker.hyperkit <<-EOF
+  pushd ${hyperkit%/*} > /dev/null
+  binary=${hyperkit##*/}
+  file $binary | grep -q text && return # already done
+
+  log Move original $binary
+  mv $binary $binary.real
+
+  log Install $binary shim
+  cat > $binary <<-EOF
 		#!/bin/bash
 
 		start=0
@@ -77,10 +86,11 @@ install_hyperkit_shim() {
 
 		exec \$0.real "\$@"
 	EOF
-  chmod +x com.docker.hyperkit
+  chmod +x $binary
 
   exc '>>>>>>> RESTART DOCKER NOW <<<<<<<'
   read -p 'When docker is responding (i.e. docker image ls), press return: '
+  popd > /dev/null
 }
 
 create_docker_network() {
