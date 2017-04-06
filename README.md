@@ -7,7 +7,9 @@ It's worth remembering that this appears to be a commonly requested feature, so
 it might be [worth checking][docker-for-mac-networking] to see if it's been
 fixed in recent versions.
 
-This solution was most recently tested with: `17.03.1-ce, build c6d412e`
+This solution has been tested with:
+- `17.03.1-ce, build c6d412e`
+- `17.04.0-ce-rc2, build 2f35d73`
 
 [docker-for-mac-networking]: https://docs.docker.com/docker-for-mac/networking/
 
