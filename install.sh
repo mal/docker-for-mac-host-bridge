@@ -102,7 +102,7 @@ create_docker_network() {
   esac
 
   log Create host-accessible network
-  docker network create -o com.docker.network.bridge.name=$netintf $network
+  docker network create $network
 }
 
 bridge_docker_network() {
