@@ -7,14 +7,16 @@ It's worth remembering that this appears to be a commonly requested feature, so
 it might be [worth checking][docker-for-mac-networking] to see if it's been
 fixed in recent versions.
 
-Docker Version                  | Host Bridge Version                                                     | Fully Tested
---------------------------------| ----------------------------------------------------------------------- | ------------
-`17.03.1-ce, build c6d412e`     | [v1.1.0](https://github.com/mal/docker-for-mac-host-bridge/tree/v1.1.0) | :heavy_check_mark:
-`17.04.0-ce-rc2, build 2f35d73` | [v1.1.0](https://github.com/mal/docker-for-mac-host-bridge/tree/v1.1.0) | :heavy_check_mark:
-`17.05 *`                       | [v1.1.0](https://github.com/mal/docker-for-mac-host-bridge/tree/v1.1.0) | :heavy_check_mark:
-`17.06 *`                       | `master`                                                                | :x:
+Docker Version                  | Host Bridge Version | Fully Tested
+------------------------------- | ------------------- | ------------------
+`17.03.1-ce, build c6d412e`     | [v1.1.0][1.1.0]     | :heavy_check_mark:
+`17.04.0-ce-rc2, build 2f35d73` | [v1.1.0][1.1.0]     | :heavy_check_mark:
+`17.05 *`                       | [v1.1.0][1.1.0]     | :heavy_check_mark:
+`17.06 *`                       | `master`            | :heavy_check_mark:
+`17.09.0-ce-mac33 (19543)`      | `master`            | :heavy_check_mark:
 
 [docker-for-mac-networking]: https://docs.docker.com/docker-for-mac/networking/
+[1.1.0]: https://github.com/mal/docker-for-mac-host-bridge/tree/v1.1.0
 
 ## Approach
 
