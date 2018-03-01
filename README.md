@@ -9,14 +9,14 @@ fixed in recent versions.
 
 Docker Version                  | Host Bridge Version | Fully Tested
 ------------------------------- | ------------------- | ------------------
-`17.03.1-ce, build c6d412e`     | [v1.1.0][1.1.0]     | :heavy_check_mark:
-`17.04.0-ce-rc2, build 2f35d73` | [v1.1.0][1.1.0]     | :heavy_check_mark:
-`17.05 *`                       | [v1.1.0][1.1.0]     | :heavy_check_mark:
-`17.06 *`                       | `master`            | :heavy_check_mark:
-`17.09.0-ce-mac33 (19543)`      | `master`            | :heavy_check_mark:
+`17.03.1-ce, build c6d412e`     | `>= 1.0.0`          | :heavy_check_mark:
+`17.04.0-ce-rc2, build 2f35d73` | `>= 1.1.0`          | :heavy_check_mark:
+`17.05 *`                       | `>= 1.1.0`          | :heavy_check_mark:
+`17.06 *`                       | `>= 1.1.0`          | :heavy_check_mark:
+`17.09.0-ce-mac33 (19543)`      | `>= 1.1.0`          | :heavy_check_mark:
+`18.03.0-ce-rc1, build c160c73` | `>= 1.2.0`          | :heavy_check_mark:
 
 [docker-for-mac-networking]: https://docs.docker.com/docker-for-mac/networking/
-[1.1.0]: https://github.com/mal/docker-for-mac-host-bridge/tree/v1.1.0
 
 ## Approach
 
