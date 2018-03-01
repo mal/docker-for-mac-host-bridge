@@ -50,7 +50,8 @@ chown_tap_device() {
 install_hyperkit_shim() {
   set -- \
     $appdir/Contents/MacOS/com.docker.hyperkit \
-    $appdir/Contents/Resources/bin/hyperkit
+    $appdir/Contents/Resources/bin/hyperkit \
+    $appdir/Contents/Resources/bin/com.docker.hyperkit
 
   for hyperkit in "$@"
     do test -f $hyperkit && break
