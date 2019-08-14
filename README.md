@@ -1,3 +1,16 @@
+**This project is no longer maintained as my team have moved away from
+developing on MacOS. A more active project with similar aims may be found
+[here][almir]. For those that prefer the approach taken by this project, there
+are several forks that _may_ offer some support for newer versions of Docker
+and can be found via the [network][network] and [forks][forks] pages of this
+repo.**
+
+[almir]: https://github.com/AlmirKadric-Published/docker-tuntap-osx
+[network]: https://github.com/mal/docker-for-mac-host-bridge/network
+[forks]: https://github.com/mal/docker-for-mac-host-bridge/network/members
+
+---
+
 # Docker for Mac - Host Bridge
 
 As of the time of writing Docker for Mac can't access containers via IP from
